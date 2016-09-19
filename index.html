@@ -1,0 +1,214 @@
+<html>
+    <head>
+        <title>brickbraker</title>
+        <script src="https://raw.githubusercontent.com/processing-js/processing-js/v1.4.8/processing.min.js"></script>
+	</head>
+	<body>
+        <script type="text/processing" data-processing-target="mycanvas">
+		
+		// global variables to allow for user input
+		var speedX;
+        var speedY;
+		
+		document.getElementById("changespeed").onclick = changeSpeed;
+		
+		function changeSpeed() {
+			var i = document.getElementById("speed").value;
+			i = Math.abs(i);
+			if (speedX < 0) {
+				speedX = i*-1;
+			}
+			if (speedY < 0) {
+				speedY = i*-1;
+			}
+			console.log(i);
+			console.log(typeof i);
+			document.getElementById("currentSpeed").innerHTML = speedX;
+		}
+		
+        class Brick{
+            var xPos;
+            var yPos;
+            
+            // This teaches the computer HOW to make a paddle
+            Brick(x, y){
+                xPos = x;
+                yPos = y;
+            }
+            
+            // Tell computer HOW to show the paddle
+            void showBrick(){
+                rect(xPos, yPos, 40, 10);
+            }
+            
+            
+            boolean hasBeenHit(ball){
+                // Worry about the left side of the Paddle
+                // Worry about the right side too!
+                if(    (ball.xPosition > xPos) // Ball To the right of brick's left side
+                    && (ball.xPosition < xPos + 40)  // Ball to the left of brick's right side
+                    && (ball.yPosition < yPos) // Ball below the top of the brick 
+                    && (ball.yPosition > yPos - 10) // Ball above the bottom of the brick
+                    ){
+                    
+					return true;
+                    
+                } else {
+					return false;
+				}
+                
+            }
+        }
+        
+        class Paddle{
+            var xPos;
+            var yPos;
+            
+            // This teaches the computer HOW to make a paddle
+            Paddle(x, y){
+                xPos = x;
+                yPos = y;
+            }
+            
+            // Tell computer HOW to show the paddle
+            void showPaddle(){
+                rect(xPos, yPos, 100, 10);
+            }
+            
+            // Tell the computer HOW to move the paddle
+            void movePaddle(){
+                xPos = mouseX;
+            }
+        }
+        
+        
+    
+        // This is the class
+        class Ball{
+        
+            // Attributes: These are the things that each ball needs
+            // to remember!
+            var xPosition;
+            var yPosition;
+        
+            // This is the set of instructions for HOW to make a ball
+            // It is the recipe for a ball. It won't actually make one now.
+            Ball(x, y, sX, sY){
+                xPosition = x;
+                yPosition = y;
+                speedX = sX;
+                speedY = sY;
+            }
+            
+            // This is HOW TO SHOW A BALL.
+            void showBall(){
+                ellipse(xPosition, yPosition, 30, 30);
+            }
+            
+            // This is HOW TO MOVE A BALL
+            void moveBall(pad){
+                
+                // If it hits left or right, change x speed
+                if((xPosition > 800) || (xPosition < 0)){
+                    speedX = speedX * -1;
+                }
+                
+                // If it hits the top or bottom, change y speed
+                if(yPosition < 0){ //|| (yPosition > 600)
+                    speedY = speedY * -1;
+                } else if (yPosition > 600) {
+					background(0,0,0);
+					PFont fontA = loadFont("Arial");
+					// Set the font and its size (in units of pixels)
+					textFont(fontA, 60);
+					text("GAME OVER", 200, 250);
+				}
+                
+                // Worry about the left side of the Paddle
+                // Worry about the right side too!
+                if(    (xPosition > pad.xPos) // To the right of paddle's left side
+                    && (xPosition < (pad.xPos + 100))  // To the left of paddle's right side
+                    && (yPosition < pad.yPos + 10) // Below the top of the paddle 
+                    && (yPosition > pad.yPos)      // Above the bottom of the paddle
+                    ){
+                    
+                    speedY = speedY * -1;
+                    
+                }
+                
+                //ball 
+                
+                
+                xPosition = xPosition + speedX;
+                yPosition = yPosition + speedY;
+            
+            }
+        
+        }
+
+        var theBall;
+        var aPaddle;
+        var BrickList;
+		//var aBrick;
+        
+        void setup()
+        {
+            theBall = new Ball(410, 100, 2, 2);
+            aPaddle = new Paddle(400, 550);
+            //aBrick = new Brick(400, 50);
+            BrickList = [];
+			for (var i = 0; i < 15; i++) {
+				BrickList.push(new Brick(i*50, 50))
+			}
+			
+            
+            // Sets how big the canvas is size(width, height)
+            size(800,600);
+            background(17,9,89);
+            
+            // This is a function definition.
+            // The name "setup" is part of the processing API and is a special name.
+            // It will get called once by processing!
+        }
+
+        void draw(){
+            background(17,9,89);
+            
+            theBall.showBall();
+            aPaddle.showPaddle();
+            //aBrick.showBrick();
+			//aBrick.hasBeenHit(theBall);
+            
+			for (var i = 0; i < BrickList.length; i++) {
+				BrickList[i].showBrick();
+			}
+			
+			for (var i = 0; i < BrickList.length; i++) {
+				if (BrickList[i].hasBeenHit(theBall)) {
+					BrickList.splice(i,1);
+					i = i - 1;
+				}
+			}
+			
+			if(BrickList.length == 0) {
+				background(100, 255, 150);
+				PFont fontA = loadFont("Arial");
+				// Set the font and its size (in units of pixels)
+				textFont(fontA, 60);
+				text("YOU WIN", 200, 250);
+			}
+			
+            theBall.moveBall(aPaddle);
+            aPaddle.movePaddle();
+        }
+        </script>
+		
+		<div>
+			<p>Current Speed:</p><p id="currentSpeed">30</p>
+			<p>Change Speed To: <input id="speed" type="number" name="lname"></p><br>
+			<button id="changespeed">Submit</button> 
+		</div>
+        <canvas id="mycanvas"></canvas>
+		
+    </body>
+</html>
