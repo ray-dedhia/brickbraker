@@ -1,7 +1,17 @@
+
 <html>
     <head>
         <title>brickbraker</title>
         <script src="https://raw.githubusercontent.com/processing-js/processing-js/v1.4.8/processing.min.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <style>
+
+            div {
+                padding: 10px;
+            }
+        </style>
 	</head>
 	<body>
         <script type="text/processing" data-processing-target="mycanvas">
@@ -9,7 +19,7 @@
 		// global variables to allow for user input
 		var speedX;
         var speedY;
-		
+
 		document.getElementById("changespeed").onclick = changeSpeed;
 		
 		function changeSpeed() {
@@ -23,29 +33,26 @@
 			}
 			console.log(i);
 			console.log(typeof i);
-			document.getElementById("currentSpeed").innerHTML = speedX;
 		}
 		
         class Brick{
             var xPos;
             var yPos;
             
-            // This teaches the computer HOW to make a paddle
+            // how to make a brick
             Brick(x, y){
                 xPos = x;
                 yPos = y;
             }
             
-            // Tell computer HOW to show the paddle
+            // how to show the brick
             void showBrick(){
                 rect(xPos, yPos, 40, 10);
             }
             
             
             boolean hasBeenHit(ball){
-                // Worry about the left side of the Paddle
-                // Worry about the right side too!
-                if(    (ball.xPosition > xPos) // Ball To the right of brick's left side
+                if(    (ball.xPosition > xPos) // Ball to the right of brick's left side
                     && (ball.xPosition < xPos + 40)  // Ball to the left of brick's right side
                     && (ball.yPosition < yPos) // Ball below the top of the brick 
                     && (ball.yPosition > yPos - 10) // Ball above the bottom of the brick
@@ -64,35 +71,29 @@
             var xPos;
             var yPos;
             
-            // This teaches the computer HOW to make a paddle
+            // how to make a paddle
             Paddle(x, y){
                 xPos = x;
                 yPos = y;
             }
             
-            // Tell computer HOW to show the paddle
+            // how to show the paddle
             void showPaddle(){
                 rect(xPos, yPos, 100, 10);
             }
             
-            // Tell the computer HOW to move the paddle
+            // how to move the paddle
             void movePaddle(){
                 xPos = mouseX;
             }
         }
         
         
-    
-        // This is the class
         class Ball{
         
-            // Attributes: These are the things that each ball needs
-            // to remember!
             var xPosition;
             var yPosition;
         
-            // This is the set of instructions for HOW to make a ball
-            // It is the recipe for a ball. It won't actually make one now.
             Ball(x, y, sX, sY){
                 xPosition = x;
                 yPosition = y;
@@ -100,12 +101,10 @@
                 speedY = sY;
             }
             
-            // This is HOW TO SHOW A BALL.
             void showBall(){
                 ellipse(xPosition, yPosition, 30, 30);
             }
             
-            // This is HOW TO MOVE A BALL
             void moveBall(pad){
                 
                 // If it hits left or right, change x speed
@@ -124,8 +123,6 @@
 					text("GAME OVER", 200, 250);
 				}
                 
-                // Worry about the left side of the Paddle
-                // Worry about the right side too!
                 if(    (xPosition > pad.xPos) // To the right of paddle's left side
                     && (xPosition < (pad.xPos + 100))  // To the left of paddle's right side
                     && (yPosition < pad.yPos + 10) // Below the top of the paddle 
@@ -200,15 +197,25 @@
 			
             theBall.moveBall(aPaddle);
             aPaddle.movePaddle();
+
+            document.getElementById("currentSpeed").innerHTML = speedX;
+        
         }
+
+
+
         </script>
-		
-		<div>
-			<p>Current Speed:</p><p id="currentSpeed">30</p>
-			<p>Change Speed To: <input id="speed" type="number" name="lname"></p><br>
-			<button id="changespeed">Submit</button> 
-		</div>
-        <canvas id="mycanvas"></canvas>
-		
+        <div class = "container">
+    		<div class="row">
+                <div class="col-xs-9">
+                    <canvas id="mycanvas"></canvas>
+                </div>
+                <div class="col-xs-3">
+                    <p>Current Speed:</p><p id="currentSpeed"></p>
+                    <p>Change Speed To: <input id="speed" type="number" name="lname"></p>
+                    <button id="changespeed">Submit</button>
+                </div>
+    		</div>
+        </div>
     </body>
 </html>
